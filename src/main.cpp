@@ -1,14 +1,10 @@
-#include "client.h"
+#include "heating_controller.h"
 
+heating_controller controller;
 int main()
 {
-    client c;
-    DerivedA a;
-    a.add(5,2);
-    a.getSum();
-    DerivedB b;
-    b.add(3,6);
-    b.getSum();
+    controller.heating_controller_connect();
 
+    
     return 0;
 }

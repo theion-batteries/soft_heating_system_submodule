@@ -82,7 +82,7 @@ COMMAND_EXPAND_LISTS)
 endfunction()
 
 # copy config one by one 
-function(copy_cnt_config target_exe config_file)
+function(copy_heat_config target_exe config_file)
 add_custom_command(TARGET ${target_exe} POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy ${config_file} ${HEAT_CONFIG_DIR}  
 COMMENT "copy config from ${config_file} to ${HEAT_CONFIG_DIR}"
@@ -94,5 +94,7 @@ CONFIGURATIONS Debug
 RUNTIME DESTINATION bin/Debug
 )
 
-
+copy_heat_config(${executable_name} ${HEAT_CONFIG})
+copy_heat_config(${library_name} ${HEAT_CONFIG})
+copy_dlls_yaml_target_destination(${executable_name})
 

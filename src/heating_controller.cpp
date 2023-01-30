@@ -14,6 +14,10 @@ heating_controller::heating_controller(/* args */)
     }
     config = YAML::LoadFile(HEAT_CONFIG);
     _heating_params.sulfur_temperature = config["sulfur_temperature"].as<double>();
+    _heating_params.heat_mantle1_default_set_temp = config["heat_mantle1_default_set_temp"].as<double>();
+    _heating_params.heat_mantle2_default_set_temp = config["heat_mantle2_default_set_temp"].as<double>();
+    _heating_params.heat_plate_default_set_temp = config["heat_plate_default_set_temp"].as<double>();
+
 #endif
 }
 
@@ -93,11 +97,11 @@ void heating_controller::heating_controller_setpaltetemperature(double temp)
 
 double heating_controller::get_heating_plate_temperature()
 {
-   double duration = 0;
+    double duration = 0;
     std::cout << "get axis curent position" << std::endl;
     auto command = heating_cmds.find(7);
     std::cout << "sending command: " << command->second << '\n';
-    auto resp =sendDirectCmd(command->second);
+    auto resp = sendDirectCmd(command->second);
     duration = std::stod(resp); // to double
     return duration;
 }
@@ -106,7 +110,7 @@ double heating_controller::get_heating_sulfur_temperature()
     std::cout << "get axis curent position" << std::endl;
     auto command = heating_cmds.find(4);
     std::cout << "sending command: " << command->second << '\n';
-    auto resp =sendDirectCmd(command->second);
+    auto resp = sendDirectCmd(command->second);
     sulfur_temperature = std::stod(resp); // to double
     return sulfur_temperature;
 }
@@ -173,7 +177,9 @@ void heating_controller::reload_config_file()
     }
     config = YAML::LoadFile(HEAT_CONFIG);
     _heating_params.sulfur_temperature = config["sulfur_temperature"].as<double>();
-
+    _heating_params.heat_mantle1_default_set_temp = config["heat_mantle1_default_set_temp"].as<double>();
+    _heating_params.heat_mantle2_default_set_temp = config["heat_mantle2_default_set_temp"].as<double>();
+    _heating_params.heat_plate_default_set_temp = config["heat_plate_default_set_temp"].as<double>();
 
 }
 

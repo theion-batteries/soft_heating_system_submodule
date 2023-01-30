@@ -1,2 +1,5 @@
 ## config file: default and user defined parameters 
 sulfur_temperature: 120 # temperature default 120
+heat_mantle1_default_set_temp : 100
+heat_mantle2_default_set_temp : 100
+heat_plate_default_set_temp : 160

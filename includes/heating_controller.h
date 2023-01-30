@@ -18,6 +18,9 @@
 struct heating_config_yaml_params
 {
     double sulfur_temperature = 120;
+    double heat_mantle1_default_set_temp = 100;
+    double heat_mantle2_default_set_temp = 100;
+    double heat_plate_default_set_temp = 160;
 };
 struct heating_server
 {
@@ -32,6 +35,7 @@ private:
     bool heatingReady = false;
     YAML::Node config;
     heating_config_yaml_params _heating_params;
+    heating_config_yaml_params _heating_params_default;
     sockpp::tcp_connector* _heating_client;
 
     std::map<u_int, std::string> heating_cmds = {

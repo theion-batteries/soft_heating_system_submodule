@@ -36,7 +36,7 @@ private:
     YAML::Node config;
     heating_config_yaml_params _heating_params;
     heating_config_yaml_params _heating_params_default;
-    sockpp::tcp_connector* _heating_client;
+    sockpp::tcp_connector* _heating_client=nullptr;
 
     std::map<u_int, std::string> heating_cmds = {
          {0,"info"}, {1,"on"}, {2,"off"},

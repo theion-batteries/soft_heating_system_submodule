@@ -89,7 +89,7 @@ COMMENT "copy config from ${config_file} to ${HEAT_CONFIG_DIR}"
     )
 endfunction()
 # install targets: exe dlls in debug config
-install(TARGETS ${executable_name} ${library_name}
+install(TARGETS  ${library_name} #${executable_name}
 CONFIGURATIONS Debug
 RUNTIME DESTINATION bin/Debug
 )

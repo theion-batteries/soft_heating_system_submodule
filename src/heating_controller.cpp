@@ -25,9 +25,10 @@ heating_controller::~heating_controller()
 {
 }
 
-void heating_controller::disconnect()
+wgm_feedbacks::enum_sub_sys_feedback heating_controller::disconnect()
 {
     if (!_heating_client) _heating_client->close();
+    return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
 }
 
 wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_connect()
@@ -54,23 +55,26 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_conn
     return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
 }
 
-void heating_controller::heating_controller_activate()
+wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_activate()
 {
     auto command = heating_cmds.find(1);
     if (command != heating_cmds.end()) {
         std::cout << "sending command: " << command->second << '\n';
         sendDirectCmd(command->second);
     }
+    return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
 
 }
 
-void heating_controller::heating_controller_deactivate()
+wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_deactivate()
 {
     auto command = heating_cmds.find(2);
     if (command != heating_cmds.end()) {
         std::cout << "sending command: " << command->second << '\n';
         sendDirectCmd(command->second);
     }
+    return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
+
 }
 void heating_controller::heating_controller_settemperature(double temp)
 

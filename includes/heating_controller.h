@@ -53,9 +53,9 @@ public:
     ~heating_controller();
     // controller
     wgm_feedbacks::enum_sub_sys_feedback heating_controller_connect();
-    void disconnect();
-    void heating_controller_activate();
-    void heating_controller_deactivate();
+    wgm_feedbacks::enum_sub_sys_feedback disconnect();
+    wgm_feedbacks::enum_sub_sys_feedback heating_controller_activate();
+    wgm_feedbacks::enum_sub_sys_feedback heating_controller_deactivate();
     void heating_controller_settemperature(double temp);
     void heating_controller_setpaltetemperature(double temp);
     /********* helper functions */

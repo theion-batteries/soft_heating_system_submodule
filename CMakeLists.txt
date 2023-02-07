@@ -12,7 +12,7 @@ cmake_minimum_required(VERSION 3.5.0)
 # project name, exec and lib
 set(project_name heating_system)
 set(library_name heatingSystemLib)
-set(executable_name heatingSystemExe)
+set(executable_name heatingSystemBin)
 
 project(${project_name} VERSION "1.0")
 set(VCPKG_ROOT "C:/vcpkg/installed/x64-windows/share")

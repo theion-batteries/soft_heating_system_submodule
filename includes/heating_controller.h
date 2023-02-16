@@ -15,22 +15,21 @@
 #include <string.h>
 #include "yaml-cpp/yaml.h"
 #include "subsystem_feedback.h"
+using enum wgm_feedbacks::enum_hw_feedback;
+using enum wgm_feedbacks::enum_sub_sys_feedback;
 struct heating_config_yaml_params
 {
+    std::string heating_server_ip= "192.168.0.208";
+    uint16_t heating_server_port= 8881;
     double sulfur_temperature = 120;
     double heat_mantle1_default_set_temp = 100;
     double heat_mantle2_default_set_temp = 100;
     double heat_plate_default_set_temp = 160;
 };
-struct heating_server
-{
-    const char* ip = "192.168.0.208";
-    uint16_t port = 8881;
-};
+
 class heating_controller
 {
 private:
-    heating_server _heating_server;
     sockpp::socket_initializer sockInit;
     bool heatingReady = false;
     YAML::Node config;
@@ -44,8 +43,8 @@ private:
         {5,"temp"}, {6,"state?"}, 
         {7,"plate_temp?"}, {8,"plate_temp"}
     };
-    std::string heating_incoming_data;
-    u_int heating_data_length = 1024;
+    std::string incoming_data;
+    u_int heating_data_length = 5012;
     double sulfur_temperature = 0;
 
 public:
@@ -56,8 +55,8 @@ public:
     wgm_feedbacks::enum_sub_sys_feedback disconnect();
     wgm_feedbacks::enum_sub_sys_feedback heating_controller_activate();
     wgm_feedbacks::enum_sub_sys_feedback heating_controller_deactivate();
-    void heating_controller_settemperature(double temp);
-    void heating_controller_setpaltetemperature(double temp);
+    wgm_feedbacks::enum_sub_sys_feedback heating_controller_settemperature(double temp);
+    wgm_feedbacks::enum_sub_sys_feedback heating_controller_setpaltetemperature(double temp);
     /********* helper functions */
     bool get_heating_controller_status();
     /*     helper getter */
@@ -67,7 +66,7 @@ public:
     std::string sendDirectCmd(std::string cmd);
     std::string waitForResponse();
     void sendCmd(std::string& cmd, sockpp::tcp_connector* client, std::string args);
-    void reload_config_file();
+    wgm_feedbacks::enum_sub_sys_feedback reload_config_file();
 };
 
 

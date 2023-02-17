@@ -48,7 +48,8 @@ private:
     double sulfur_temperature = 0;
 
 public:
-    heating_controller(/* args */);
+    heating_controller(std::string ip, uint16_t port);
+    heating_controller();
     ~heating_controller();
     // controller
     wgm_feedbacks::enum_sub_sys_feedback heating_controller_connect();

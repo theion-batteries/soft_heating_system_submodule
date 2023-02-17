@@ -17,6 +17,8 @@ set(executable_name heatingSystemBin)
 project(${project_name} VERSION "1.0")
 set(VCPKG_ROOT "C:/vcpkg/installed/x64-windows/share")
 set(CMAKE_PREFIX_PATH "${VCPKG_ROOT}/installed/x64-windows/share")
+add_subdirectory(tests)
+
 #find_package(sockpp CONFIG REQUIRED)
 find_package(yaml-cpp CONFIG REQUIRED)
 # set the C++ standard: 20 is set

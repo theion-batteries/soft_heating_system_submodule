@@ -2,7 +2,7 @@
 
 
 
-heating_controller::heating_controller(/* args */)
+heating_controller::heating_controller(std::string ip, uint16_t port)
 {
     std::cout << "creating subsystem heating controller " << std::endl;
 #ifdef HEAT_CONFIG
@@ -17,11 +17,22 @@ heating_controller::heating_controller(/* args */)
     _heating_params.heat_mantle1_default_set_temp = config["heat_mantle1_default_set_temp"].as<double>();
     _heating_params.heat_mantle2_default_set_temp = config["heat_mantle2_default_set_temp"].as<double>();
     _heating_params.heat_plate_default_set_temp = config["heat_plate_default_set_temp"].as<double>();
+    if (ip == "" && port ==NULL)
+    {
     _heating_params.heating_server_ip = config["heating_server_ip"].as<std::string>();
     _heating_params.heating_server_port = config["heating_server_port"].as<uint16_t>();
+    }
+    else
+    {
+    _heating_params.heating_server_ip = ip;
+    _heating_params.heating_server_port = port;
+    }
 #endif
 }
-
+heating_controller::heating_controller()
+{
+    
+}
 heating_controller::~heating_controller()
 {
 }

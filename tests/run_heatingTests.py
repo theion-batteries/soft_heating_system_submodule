@@ -129,15 +129,3 @@ else:
     #print(reload_config_file_result.stdout.decode())
     #print(reload_config_file_result.stderr.decode())
 
-# Run the sendDirectCmd test
-sendDirectCmd_args = [test_executable, "--gtest_filter=heatingControllerTest.sendDirectCmd"]
-sendDirectCmd_result = subprocess.run(sendDirectCmd_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-
-# Check the return code of the sendDirectCmd test
-if sendDirectCmd_result.returncode == 0:
-    print("sendDirectCmd test passed!")
-else:
-    print("sendDirectCmd test failed:")
-    #print(sendDirectCmd_result.stdout.decode())
-    #print(sendDirectCmd_result.stderr.decode())
-

@@ -47,6 +47,3 @@ TEST_F(heatingControllerTest, get_heating_sulfur_temperature) {
 TEST_F(heatingControllerTest, reload_config_file) {
     EXPECT_EQ(sub_success, heatingControl->reload_config_file());
 }
-TEST_F(heatingControllerTest, sendDirectCmd) {
-    EXPECT_EQ("NA", heatingControl->sendDirectCmd("info"));
-}

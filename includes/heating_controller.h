@@ -35,7 +35,7 @@ private:
     YAML::Node config;
     heating_config_yaml_params _heating_params;
     heating_config_yaml_params _heating_params_default;
-    sockpp::tcp_connector* _heating_client=nullptr;
+    sockpp::tcp_connector* _client=nullptr;
 
     std::map<u_int, std::string> heating_cmds = {
          {0,"info"}, {1,"on"}, {2,"off"},
@@ -44,7 +44,7 @@ private:
         {7,"plate_temp?"}, {8,"plate_temp"}
     };
     std::string incoming_data;
-    u_int heating_data_length = 5012;
+    u_int data_length = 5012;
     double sulfur_temperature = 0;
 
 public:

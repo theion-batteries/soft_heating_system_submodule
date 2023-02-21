@@ -17,21 +17,30 @@ heating_controller::heating_controller(std::string ip, uint16_t port)
     _heating_params.heat_mantle1_default_set_temp = config["heat_mantle1_default_set_temp"].as<double>();
     _heating_params.heat_mantle2_default_set_temp = config["heat_mantle2_default_set_temp"].as<double>();
     _heating_params.heat_plate_default_set_temp = config["heat_plate_default_set_temp"].as<double>();
-    if (ip == "" && port ==NULL)
-    {
-    _heating_params.heating_server_ip = config["heating_server_ip"].as<std::string>();
-    _heating_params.heating_server_port = config["heating_server_port"].as<uint16_t>();
-    }
-    else
-    {
+
     _heating_params.heating_server_ip = ip;
     _heating_params.heating_server_port = port;
-    }
 #endif
 }
 heating_controller::heating_controller()
 {
-    
+    std::cout << "creating subsystem heating controller " << std::endl;
+#ifdef HEAT_CONFIG
+    std::cout << "loading config file: " << HEAT_CONFIG << std::endl;
+    std::ifstream filein(HEAT_CONFIG);
+    for (std::string line; std::getline(filein, line); )
+    {
+        std::cout << line << std::endl;
+    }
+    config = YAML::LoadFile(HEAT_CONFIG);
+    _heating_params.sulfur_temperature = config["sulfur_temperature"].as<double>();
+    _heating_params.heat_mantle1_default_set_temp = config["heat_mantle1_default_set_temp"].as<double>();
+    _heating_params.heat_mantle2_default_set_temp = config["heat_mantle2_default_set_temp"].as<double>();
+    _heating_params.heat_plate_default_set_temp = config["heat_plate_default_set_temp"].as<double>();
+
+    _heating_params.heating_server_ip = config["heating_server_ip"].as<std::string>();
+    _heating_params.heating_server_port = config["heating_server_port"].as<uint16_t>();
+#endif
 }
 heating_controller::~heating_controller()
 {
@@ -39,28 +48,35 @@ heating_controller::~heating_controller()
 
 wgm_feedbacks::enum_sub_sys_feedback heating_controller::disconnect()
 {
-    if (!_heating_client) _heating_client->close();
-    return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
+    if (!_client)
+    {
+        _client->close();
+        heatingReady = false;
+
+        return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
+    }
+    return wgm_feedbacks::enum_sub_sys_feedback::sub_error;
+
 }
 
 wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_connect()
 {
-    std::cout << "connecting to heating server" << std::endl;
-    _heating_client = new sockpp::tcp_connector({ _heating_params.heating_server_ip, _heating_params.heating_server_port });
+    std::cout << "connecting to heating server " << _heating_params.heating_server_ip << std::endl;
+    _client = new sockpp::tcp_connector({ _heating_params.heating_server_ip, _heating_params.heating_server_port });
     // Implicitly creates an inet_address from {host,port}
     // and then tries the connection.
-    if (!_heating_client) {
+    if (!_client) {
         std::cerr << "Error connecting to server at "
             << sockpp::inet_address(_heating_params.heating_server_ip, _heating_params.heating_server_port)
-            << "\n\t" << _heating_client->last_error_str() << std::endl;
+            << "\n\t" << _client->last_error_str() << std::endl;
         return wgm_feedbacks::enum_sub_sys_feedback::sub_error;
     }
-    std::cout << "Created a connection from " << _heating_client->address() << std::endl;
-    std::cout << "Created a connection to " << _heating_client->peer_address() << std::endl;
+    std::cout << "Created a connection from " << _client->address() << std::endl;
+    std::cout << "Created a connection to " << _client->peer_address() << std::endl;
     // Set a timeout for the responses
-    if (!_heating_client->read_timeout(std::chrono::seconds(5))) {
+    if (!_client->read_timeout(std::chrono::seconds(5))) {
         std::cerr << "Error setting timeout on TCP stream: "
-            << _heating_client->last_error_str() << std::endl;
+            << _client->last_error_str() << std::endl;
         return wgm_feedbacks::enum_sub_sys_feedback::sub_error;
     }
     heatingReady = true;
@@ -97,10 +113,10 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_sett
 {
     auto command = heating_cmds.find(5);
     if (command != heating_cmds.end()) {
-    _heating_params.sulfur_temperature = temp;
+        _heating_params.sulfur_temperature = temp;
         std::cout << "sending command: " << command->second << " args: " << temp << '\n';
         std::string args = "=" + std::to_string(temp);
-        auto reply = sendDirectCmd(command->second+args);
+        auto reply = sendDirectCmd(command->second + args);
         std::cout << "set temp reply received " << reply << '\n';
         if (reply == "ok") return sub_success;
         return sub_error;
@@ -112,10 +128,10 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_setp
 {
     auto command = heating_cmds.find(8);
     if (command != heating_cmds.end()) {
-    _heating_params.sulfur_temperature = temp;
+        _heating_params.sulfur_temperature = temp;
         std::cout << "sending command: " << command->second << " args: " << temp << '\n';
         std::string args = "=" + std::to_string(temp);
-        auto reply = sendDirectCmd(command->second+args);
+        auto reply = sendDirectCmd(command->second + args);
         std::cout << "set temp reply received " << reply << '\n';
         if (reply == "ok") return sub_success;
         return sub_error;
@@ -159,43 +175,49 @@ bool heating_controller::get_heating_controller_status()
 // direct call
 std::string heating_controller::sendDirectCmd(std::string cmd)
 {
-    if (_heating_client == nullptr) return "not connected";
+    if (_client == nullptr) return "not connected";
     std::cout << "sending heaitng command " << cmd << std::endl;
     cmd = cmd + "\r\n";
-    if (_heating_client->write(cmd) != ssize_t(std::string(cmd).length())) {
+    if (_client->write(cmd) != ssize_t(std::string(cmd).length())) {
         std::cout << "Error writing to the TCP stream: "
-            << _heating_client->last_error_str() << std::endl;
+            << _client->last_error_str() << std::endl;
     }
     return waitForResponse();
 }
-std::string linear_motion::waitForResponse()
+std::string heating_controller::waitForResponse()
 {
     std::cout << "awaiting server response" << std::endl;
-    while (axis_client_sock->is_connected())
+    auto start = std::chrono::steady_clock::now();
+    while (_client->is_connected())
     {
+
         char Strholder[5012];
         
-        ssize_t n = axis_client_sock->read_n(&Strholder, 5012);
+            ssize_t n = _client->read_n(&Strholder, sizeof(Strholder));
         if (n > 0)
         {
             std::cout << "n bytes received: " << n << std::endl;
-            axis_incoming_data = Strholder;
-            axis_incoming_data.resize(n);
-            std::cout << "server replied : " << axis_incoming_data << std::endl;
-            //return axis_incoming_data;
+            incoming_data = Strholder;
+            incoming_data.resize(n);
+            std::cout << "server replied : " << incoming_data << std::endl;
             break;
         }
         else
         {
             std::cout << "no server response, retry " << n << std::endl;
-            //waitForResponse();
-            axis_incoming_data = "NA";
+            incoming_data = "NA";
+            long long timeout = 10;
+            auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
+            if(duration >= timeout)
+            {
+            std::cout << "no response within a timeout of "<<duration<< " seconds, " <<"aborting.."<< std::endl;
+            break;
+            } 
             continue;
-            //return "NA";
         }
 
     }
-    return axis_incoming_data;
+    return incoming_data;
 }
 wgm_feedbacks::enum_sub_sys_feedback heating_controller::reload_config_file()
 {

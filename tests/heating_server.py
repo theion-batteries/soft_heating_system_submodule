@@ -39,7 +39,7 @@ def run_server():
                     print(f"sent: {ok}")
                     c.send(ok)
                 elif data == b'temp?\r\n':
-                    print(f"received: {temp}?")
+                    print("received: temp?")
                     print(f"sent: {temp_sulfur}")
                     c.send(temp_sulfur)
                 elif data == b'state?\r\n':

@@ -80,6 +80,7 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_conn
         return wgm_feedbacks::enum_sub_sys_feedback::sub_error;
     }
     heatingReady = true;
+
     return wgm_feedbacks::enum_sub_sys_feedback::sub_success;
 }
 
@@ -167,6 +168,8 @@ double heating_controller::get_heating_sulfur_temperature()
 
 bool heating_controller::get_heating_controller_status()
 {
+    std::cout << "check heating status: " << heatingReady << std::endl;
+
     return heatingReady;
 }
 
@@ -192,8 +195,8 @@ std::string heating_controller::waitForResponse()
     {
 
         char Strholder[5012];
-        
-            ssize_t n = _client->read_n(&Strholder, sizeof(Strholder));
+
+        ssize_t n = _client->read_n(&Strholder, sizeof(Strholder));
         if (n > 0)
         {
             std::cout << "n bytes received: " << n << std::endl;
@@ -208,11 +211,11 @@ std::string heating_controller::waitForResponse()
             incoming_data = "NA";
             long long timeout = 10;
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
-            if(duration >= timeout)
+            if (duration >= timeout)
             {
-            std::cout << "no response within a timeout of "<<duration<< " seconds, " <<"aborting.."<< std::endl;
-            break;
-            } 
+                std::cout << "no response within a timeout of " << duration << " seconds, " << "aborting.." << std::endl;
+                break;
+            }
             continue;
         }
 

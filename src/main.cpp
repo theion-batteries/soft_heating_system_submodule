@@ -4,8 +4,8 @@
 
 enum options {
 	CLOSE = 0,
-	OPEN_CONFIG = 1,
-	RESET_CONFIG = 2,
+	IS_CONNECTED = 1,
+	RELOAD_CONFIG = 2,
 	CONNECT = 3,
 	SEND_CMD = 4,
 	CHANGE_IP = 5,
@@ -16,7 +16,7 @@ enum options {
 };
 
 int main(int argc, char* argv[]) {
-	heating_controller heatControl = heating_controller("127.0.0.1", 8881);
+	heating_controller heatControl= heating_controller("127.0.0.1", 8881);
 	options choices = CLOSE;
 	int choice = -1;
 	std::string cmd = "";
@@ -26,8 +26,8 @@ int main(int argc, char* argv[]) {
 	while (choice != CLOSE) {
 		std::cout << "Please choose an option: \n";
 		std::cout << "0: CLOSE\n";
-		std::cout << "1: OPEN_CONFIG\n";
-		std::cout << "2: RESET_CONFIG\n";
+		std::cout << "1: IS_CONNECTED\n";
+		std::cout << "2: RELOAD_CONFIG\n";
 		std::cout << "3: CONNECT\n";
 		std::cout << "4: SEND_CMD\n";
 		std::cout << "5: CHANGE_IP\n";
@@ -40,10 +40,10 @@ int main(int argc, char* argv[]) {
 		switch (choice) {
 		case CLOSE:
 			break;
-		case OPEN_CONFIG:
-			heatControl.get_heating_controller_status();
+		case IS_CONNECTED:
+			std::cout<<"status: "<<heatControl.get_heating_controller_status()<<std::endl;
 			break;
-		case RESET_CONFIG:
+		case RELOAD_CONFIG:
 			heatControl.reload_config_file();
 			break;
 		case CONNECT:

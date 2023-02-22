@@ -91,7 +91,11 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_acti
         std::cout << "sending command: " << command->second << '\n';
         auto reply = sendDirectCmd(command->second);
         std::cout << "activate reply received " << reply << '\n';
-        if (reply == "ok") return sub_success;
+        if (reply.find("ok") != std::string::npos)
+        {
+            std::cout << "ok received" <<  '\n';
+            return sub_success;
+        }
         return sub_error;
     }
     return sub_error;
@@ -104,8 +108,11 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_deac
         std::cout << "sending command: " << command->second << '\n';
         auto reply = sendDirectCmd(command->second);
         std::cout << "deactivate reply received " << reply << '\n';
-        if (reply == "ok") return sub_success;
-        return sub_error;
+        if (reply.find("ok") != std::string::npos)
+        {
+            std::cout << "ok received" <<  '\n';
+            return sub_success;
+        }        return sub_error;
     }
     return sub_error;
 }
@@ -119,8 +126,11 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_sett
         std::string args = "=" + std::to_string(temp);
         auto reply = sendDirectCmd(command->second + args);
         std::cout << "set temp reply received " << reply << '\n';
-        if (reply == "ok") return sub_success;
-        return sub_error;
+        if (reply.find("ok") != std::string::npos)
+        {
+            std::cout << "ok received" <<  '\n';
+            return sub_success;
+        }        return sub_error;
     }
     return sub_error;
 }
@@ -134,8 +144,11 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_setp
         std::string args = "=" + std::to_string(temp);
         auto reply = sendDirectCmd(command->second + args);
         std::cout << "set temp reply received " << reply << '\n';
-        if (reply == "ok") return sub_success;
-        return sub_error;
+        if (reply.find("ok") != std::string::npos)
+        {
+            std::cout << "ok received" <<  '\n';
+            return sub_success;
+        }        return sub_error;
     }
     return sub_error;
 }
@@ -156,11 +169,11 @@ double heating_controller::get_heating_sulfur_temperature()
     auto command = heating_cmds.find(4);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
-    if (!resp.find("ok"))
-    {
-        std::cout << "missing ok, error" << std::endl;
-        return 0;
-    }
+        if (resp.find("ok") == std::string::npos)
+        {
+            std::cout << "ok missing" <<  '\n';
+            return 0;
+        }
     sulfur_temperature = std::stod(resp); // to double
     return sulfur_temperature;
 }
@@ -171,11 +184,11 @@ double heating_controller::get_heating_previous_set_temperature()
     auto command = heating_cmds.find(9);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
-    if (!resp.find("ok"))
-    {
-        std::cout << "missing ok, error" << std::endl;
-        return 0;
-    }
+        if (resp.find("ok") == std::string::npos)
+        {
+            std::cout << "ok received" <<  '\n';
+            return 0;
+        }
     sulfur_temperature = std::stod(resp); // to double
     return sulfur_temperature;
 }
@@ -184,8 +197,7 @@ double heating_controller::get_heating_previous_set_temperature()
 
 bool heating_controller::get_heating_controller_status()
 {
-    std::cout << "check heating status: " << heatingReady << std::endl;
-
+    //std::cout << "check heating status: " << heatingReady << std::endl;
     return heatingReady;
 }
 

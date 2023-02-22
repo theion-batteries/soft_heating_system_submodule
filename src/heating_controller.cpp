@@ -143,7 +143,7 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_setp
 double heating_controller::get_heating_plate_temperature()
 {
     double duration = 0;
-    std::cout << "get axis curent position" << std::endl;
+    std::cout << "get heating plate temperature" << std::endl;
     auto command = heating_cmds.find(7);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
@@ -152,7 +152,7 @@ double heating_controller::get_heating_plate_temperature()
 }
 double heating_controller::get_heating_sulfur_temperature()
 {
-    std::cout << "get axis curent position" << std::endl;
+    std::cout << "get heating  temperature" << std::endl;
     auto command = heating_cmds.find(4);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
@@ -164,6 +164,22 @@ double heating_controller::get_heating_sulfur_temperature()
     sulfur_temperature = std::stod(resp); // to double
     return sulfur_temperature;
 }
+
+double heating_controller::get_heating_previous_set_temperature()
+{
+    std::cout << "get heating pervious set temperature" << std::endl;
+    auto command = heating_cmds.find(9);
+    std::cout << "sending command: " << command->second << '\n';
+    auto resp = sendDirectCmd(command->second);
+    if (!resp.find("ok"))
+    {
+        std::cout << "missing ok, error" << std::endl;
+        return 0;
+    }
+    sulfur_temperature = std::stod(resp); // to double
+    return sulfur_temperature;
+}
+
 /********* helper functions */
 
 bool heating_controller::get_heating_controller_status()
@@ -179,7 +195,7 @@ bool heating_controller::get_heating_controller_status()
 std::string heating_controller::sendDirectCmd(std::string cmd)
 {
     if (_client == nullptr) return "not connected";
-    std::cout << "sending heaitng command " << cmd << std::endl;
+    std::cout << "sending heating command " << cmd << std::endl;
     cmd = cmd + "\r\n";
     if (_client->write(cmd) != ssize_t(std::string(cmd).length())) {
         std::cout << "Error writing to the TCP stream: "

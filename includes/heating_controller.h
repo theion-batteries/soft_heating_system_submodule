@@ -41,7 +41,8 @@ private:
          {0,"info"}, {1,"on"}, {2,"off"},
         {3,"stay"}, {4,"temp?"},
         {5,"temp"}, {6,"state?"}, 
-        {7,"plate_temp?"}, {8,"plate_temp"}
+        {7,"plate_temp?"}, {8,"plate_temp"}, 
+        {9, "set_temp?"} // get the internal set temp
     };
     std::string incoming_data;
     u_int data_length = 5012;
@@ -63,6 +64,7 @@ public:
     /*     helper getter */
     double get_heating_plate_temperature();
     double get_heating_sulfur_temperature();
+    double get_heating_previous_set_temperature();
     // direct call
     std::string sendDirectCmd(std::string cmd);
     std::string waitForResponse();

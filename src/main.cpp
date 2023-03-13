@@ -41,7 +41,7 @@ int main(int argc, char* argv[]) {
 		case CLOSE:
 			break;
 		case IS_CONNECTED:
-			std::cout<<"status: "<<heatControl.get_heating_controller_status()<<std::endl;
+			std::cout<<"status: "<<heatControl.get_heating_controller_status()<<"\n";
 			break;
 		case RELOAD_CONFIG:
 			heatControl.reload_config_file();
@@ -52,12 +52,12 @@ int main(int argc, char* argv[]) {
 		case SEND_CMD:
 			std::cout << "Enter command: ";
 			std::cin >> cmd;
-			std::cout << heatControl.sendDirectCmd(cmd) << std::endl;
+			std::cout << heatControl.sendDirectCmd(cmd) << "\n";
 			break;
 		case CHANGE_IP:
 			std::cout << "Enter IP: ";
 			std::cin >> ip;
-			std::cout << "New IP: " << ip << std::endl;
+			std::cout << "New IP: " << ip << "\n";
 			break;
 		case TURN_ON:
 			heatControl.heating_controller_activate();

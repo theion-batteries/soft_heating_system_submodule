@@ -2,23 +2,23 @@
 
 int DerivedA::add(int a, int b)
 {
-    std::cout<<"A sum a+b: "<<a+b<<std::endl;
+    std::cout<<"A sum a+b: "<<a+b<<"\n";
     return sum=a+b;
 }
 int DerivedB::add(int a, int b)
 {
-    std::cout<<"B sum a+b: "<<a+b<<std::endl;
+    std::cout<<"B sum a+b: "<<a+b<<"\n";
     return sum=a+b;
 }
 
 int DerivedA::getSum()
 {
-    std::cout<<"A internal sum: "<<sum<<std::endl;
+    std::cout<<"A internal sum: "<<sum<<"\n";
     return sum;
 }
 int DerivedB::getSum()
 {
-    std::cout<<"B internal sum: "<<sum<<std::endl;
+    std::cout<<"B internal sum: "<<sum<<"\n";
     return sum;
 }
 

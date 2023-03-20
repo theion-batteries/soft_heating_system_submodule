@@ -4,13 +4,13 @@
 
 heating_controller::heating_controller(std::string ip, uint16_t port)
 {
-    std::cout << "creating subsystem heating controller " << std::endl;
+    std::cout << "creating subsystem heating controller " << "\n";
 #ifdef HEAT_CONFIG
-    std::cout << "loading config file: " << HEAT_CONFIG << std::endl;
+    std::cout << "loading config file: " << HEAT_CONFIG << "\n";
     std::ifstream filein(HEAT_CONFIG);
     for (std::string line; std::getline(filein, line); )
     {
-        std::cout << line << std::endl;
+        std::cout << line << "\n";
     }
     config = YAML::LoadFile(HEAT_CONFIG);
     _heating_params.sulfur_temperature = config["sulfur_temperature"].as<double>();
@@ -24,13 +24,13 @@ heating_controller::heating_controller(std::string ip, uint16_t port)
 }
 heating_controller::heating_controller()
 {
-    std::cout << "creating subsystem heating controller " << std::endl;
+    std::cout << "creating subsystem heating controller " << "\n";
 #ifdef HEAT_CONFIG
-    std::cout << "loading config file: " << HEAT_CONFIG << std::endl;
+    std::cout << "loading config file: " << HEAT_CONFIG << "\n";
     std::ifstream filein(HEAT_CONFIG);
     for (std::string line; std::getline(filein, line); )
     {
-        std::cout << line << std::endl;
+        std::cout << line << "\n";
     }
     config = YAML::LoadFile(HEAT_CONFIG);
     _heating_params.sulfur_temperature = config["sulfur_temperature"].as<double>();
@@ -61,22 +61,22 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::disconnect()
 
 wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_connect()
 {
-    std::cout << "connecting to heating server " << _heating_params.heating_server_ip << std::endl;
+    std::cout << "connecting to heating server " << _heating_params.heating_server_ip << "\n";
     _client = new sockpp::tcp_connector({ _heating_params.heating_server_ip, _heating_params.heating_server_port });
     // Implicitly creates an inet_address from {host,port}
     // and then tries the connection.
     if (!_client) {
         std::cerr << "Error connecting to server at "
             << sockpp::inet_address(_heating_params.heating_server_ip, _heating_params.heating_server_port)
-            << "\n\t" << _client->last_error_str() << std::endl;
+            << "\n\t" << _client->last_error_str() << "\n";
         return wgm_feedbacks::enum_sub_sys_feedback::sub_error;
     }
-    std::cout << "Created a connection from " << _client->address() << std::endl;
-    std::cout << "Created a connection to " << _client->peer_address() << std::endl;
+    std::cout << "Created a connection from " << _client->address() << "\n";
+    std::cout << "Created a connection to " << _client->peer_address() << "\n";
     // Set a timeout for the responses
     if (!_client->read_timeout(std::chrono::seconds(5))) {
         std::cerr << "Error setting timeout on TCP stream: "
-            << _client->last_error_str() << std::endl;
+            << _client->last_error_str() << "\n";
         return wgm_feedbacks::enum_sub_sys_feedback::sub_error;
     }
     heatingReady = true;
@@ -156,7 +156,7 @@ wgm_feedbacks::enum_sub_sys_feedback heating_controller::heating_controller_setp
 double heating_controller::get_heating_plate_temperature()
 {
     double duration = 0;
-    std::cout << "get heating plate temperature" << std::endl;
+    std::cout << "get heating plate temperature" << "\n";
     auto command = heating_cmds.find(7);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
@@ -165,7 +165,7 @@ double heating_controller::get_heating_plate_temperature()
 }
 double heating_controller::get_heating_sulfur_temperature()
 {
-    std::cout << "get heating  temperature" << std::endl;
+    std::cout << "get heating  temperature" << "\n";
     auto command = heating_cmds.find(4);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
@@ -180,7 +180,7 @@ double heating_controller::get_heating_sulfur_temperature()
 
 double heating_controller::get_heating_previous_set_temperature()
 {
-    std::cout << "get heating pervious set temperature" << std::endl;
+    std::cout << "get heating pervious set temperature" << "\n";
     auto command = heating_cmds.find(9);
     std::cout << "sending command: " << command->second << '\n';
     auto resp = sendDirectCmd(command->second);
@@ -197,7 +197,7 @@ double heating_controller::get_heating_previous_set_temperature()
 
 bool heating_controller::get_heating_controller_status()
 {
-    //std::cout << "check heating status: " << heatingReady << std::endl;
+    //std::cout << "check heating status: " << heatingReady << "\n";
     return heatingReady;
 }
 
@@ -207,17 +207,17 @@ bool heating_controller::get_heating_controller_status()
 std::string heating_controller::sendDirectCmd(std::string cmd)
 {
     if (_client == nullptr) return "not connected";
-    std::cout << "sending heating command " << cmd << std::endl;
+    std::cout << "sending heating command " << cmd << "\n";
     cmd = cmd + "\r\n";
     if (_client->write(cmd) != ssize_t(std::string(cmd).length())) {
         std::cout << "Error writing to the TCP stream: "
-            << _client->last_error_str() << std::endl;
+            << _client->last_error_str() << "\n";
     }
     return waitForResponse();
 }
 std::string heating_controller::waitForResponse()
 {
-    std::cout << "awaiting server response" << std::endl;
+    // std::cout << "awaiting server response" << "\n";
     auto start = std::chrono::steady_clock::now();
     while (_client->is_connected())
     {
@@ -227,21 +227,21 @@ std::string heating_controller::waitForResponse()
         ssize_t n = _client->read_n(&Strholder, sizeof(Strholder));
         if (n > 0)
         {
-            std::cout << "n bytes received: " << n << std::endl;
+            std::cout << "n bytes received: " << n << "\n";
             incoming_data = Strholder;
             incoming_data.resize(n);
-            std::cout << "server replied : " << incoming_data << std::endl;
+            std::cout << "server replied : " << incoming_data << "\n";
             break;
         }
         else
         {
-            std::cout << "no server response, retry " << n << std::endl;
+            // std::cout << "no server response, retry " << n << "\n";
             incoming_data = "NA";
             long long timeout = 10;
             auto duration = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - start).count();
             if (duration >= timeout)
             {
-                std::cout << "no response within a timeout of " << duration << " seconds, " << "aborting.." << std::endl;
+                std::cout << "no response within a timeout of " << duration << " seconds, " << "aborting.." << "\n";
                 break;
             }
             continue;
@@ -253,11 +253,11 @@ std::string heating_controller::waitForResponse()
 wgm_feedbacks::enum_sub_sys_feedback heating_controller::reload_config_file()
 {
 
-    std::cout << "reloading config file: " << HEAT_CONFIG << std::endl;
+    std::cout << "reloading config file: " << HEAT_CONFIG << "\n";
     std::ifstream filein(HEAT_CONFIG);
     for (std::string line; std::getline(filein, line); )
     {
-        std::cout << line << std::endl;
+        std::cout << line << "\n";
     }
     config = YAML::LoadFile(HEAT_CONFIG);
     _heating_params.sulfur_temperature = config["sulfur_temperature"].as<double>();
@@ -273,8 +273,8 @@ void heating_controller::sendCmd(std::string& cmd, sockpp::tcp_connector* client
 {
     if (client->write(cmd + args) != ssize_t(std::string(cmd + args).length())) {
         std::cerr << "Error writing to the TCP stream: "
-            << client->last_error_str() << std::endl;
+            << client->last_error_str() << "\n";
     }
-    std::cout << "command " << cmd + args << " sent" << std::endl;
+    std::cout << "command " << cmd + args << " sent" << "\n";
 }
 
